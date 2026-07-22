@@ -54,13 +54,13 @@ pipeline{
                 script{
                     withCredentials([
                         usernamePassword(
-                            credentialsId: 'Dockerhub-credentials',
+                            credentialsId: 'dockerhub-credentials',
                             usernameVariable: 'DOCKER_USERNAME',
                             passwordVariable: 'DOCKER_PASSWORD'
                         )
                     ]){
                         sh"""
-                            DOCKER_IMAGE ="\${DOCKER_USERNAME}:${APP_NAME}" 
+                            DOCKER_IMAGE="${DOCKER_USERNAME}/${APP_NAME}" 
 
                             echo "Building: "\${DOCKER_IMAGE}:${IMAGE_TAG}"
                             docker build --platform linux/amd64 \\
@@ -82,13 +82,13 @@ pipeline{
                 script{
                     withCredentials([
                         usernamePassword(
-                            credentialsId : 'Dockerhub-credentials',
+                            credentialsId : 'dockerhub-credentials',
                             usernameVariable : 'DOCKER_USERNAME',
                             passwordVariable : 'DOCKER_PASSWORD'
                         )
                     ]) {
                         sh"""
-                            DOCKER_IMAGE="\${DOCKER_USERNAME}/${APP_NAME}"
+                            DOCKER_IMAGE="${DOCKER_USERNAME}/${APP_NAME}"
 
                             CONTAINER_UID=\$(docker run --rm --entrypoint id \${DOCKER_IMAGE}:${IMAGE_TAG} -u)
 
@@ -111,13 +111,13 @@ pipeline{
                 script{
                     withCredentials([
                         usernamePassword(
-                            credentialsId : 'Dockerhub-credentials',
+                            credentialsId : 'dockerhub-credentials',
                             usernameVariable : 'DOCKER_USERNAME',
                             passwordVariable : 'DOCKER_PASSWORD'
                         )
                     ]) {
                         sh """
-                            DOCKER_IMAGE ="\${DOCKER_USERNAME}/${APP_NAME}"
+                            DOCKER_IMAGE ="${DOCKER_USERNAME}/${APP_NAME}"
 
                             echo "Logging to Dockerhub.."
                             echo \${DOCKER_PASSWORD} | docker login -u \${DOCKER_USERNAME} --password-stdin
@@ -140,21 +140,21 @@ pipeline{
                 script{
                     withCredentials([
                         usernamePassword(
-                            credentialsId: 'Dockerhub-credentials',
+                            credentialsId: 'dockerhub-credentials',
                             usernameVariable: 'DOCKER_USERNAME',
                             passwordVariable: 'DOCKER_PASSWORD'
                         )
                     ]) {
                         sshagent(['deploy-jenkins-ssh-server']){
                             sh"""
-                                DOCKER_IMAGE="\${DOCKER_USERNAME}/${APP_NAME}"
+                                DOCKER_IMAGE="${DOCKER_USERNAME}/${APP_NAME}"
                                 
-                                echo"Deploying to production"
+                                echo "Deploying to production"
                                 echo "Server: ${DEPLOY_SERVER}"
                                 echo "Image: \${DOCKER_IMAGE}:${IMAGE_TAG}"
 
                                 ssh -o StrictHostKeyChecking=no \\
-                                    -p ${DEPLOY_PORT}  \\
+                                    -p ${DEPLOY_PORT}:${DEPLOY_PORT} \\
                                     ${DEPLOY_USER}@${DEPLOY_SERVER} >>SSHEND
                                 
                                 

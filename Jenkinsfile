@@ -41,9 +41,9 @@ pipeline{
             steps{
                 sh"""
                     echo "Verifying environment"
-                    echo "Hostname : \${hostname}"
-                    echo "User : \${whoami}"
-                    docker -version
+                    echo "Hostname : ${hostname}"
+                    echo "User : ${whoami}"
+                    docker --version
                 """
             }
         }
@@ -74,7 +74,7 @@ pipeline{
             steps{
                 sh"""
                     // Verifying image
-                    echo"Verifying image: ${CI_IMAGE}"
+                    echo "Verifying image: ${CI_IMAGE}"
 
                         // checking the jar file in the image
                         docker run --rm --entrypoint ls ${CI_IMAGE} -lh /app/app.jar
@@ -85,7 +85,7 @@ pipeline{
                         echo "Node OK"
 
                         // Checking the ports inside the image
-                        docker inspect ${CI_IMAGE} --format="Ports:{{json.config.ExposedPorts}}"
+                        docker inspect ${CI_IMAGE} --format="Ports:{{json .Config.ExposedPorts}}"
                         echo "Node OK"
 
                         echo "Verified the image successfully"
@@ -96,13 +96,15 @@ pipeline{
         stage("Security Scan"){
             steps{
                 sh"""
-                    CONTAINER_UID = "\$(docker run --rm --entrypoint id ${CI_IMAGE} -u)
+                    CONTAINER_UID="\$(docker run --rm --entrypoint id ${CI_IMAGE} -u)"
                     echo "Container_uid = \${CONTAINER_UID}"
 
                     if ["\$CONTAINER_UID" = "0"];then
                         echo "Failed... The user is root. High Alert Risk!!!!!"
+                        exit 1
                     else
                         echo "PASSED.. The user is non-user. The UID is \${CONTAINER_UID}"
+                    fi
                 """
             }
         }
@@ -127,7 +129,7 @@ pipeline{
                         CI PASSED: PR VALIDATED
                         =======================
 
-                        PR : ${env.CHANGE_ID} - ${CHANGE_TITLE}
+                        PR : ${env.CHANGE_ID} - ${env.CHANGE_TITLE}
 
                         verify environment: passed
                         code quality      : passed

@@ -6,14 +6,14 @@ pipeline{
         }
     }
 
-    triggres{
+    triggers {
         githubPush()
     }
 
     options{
-        buildDiscarder(logRotator(numToKeepStr: 10))
+        buildDiscarder(logRotator(numToKeepStr: '10'))
         timestamps()
-        timeout(time:25,unit: 'MINUTES')
+        timeout(time:25, unit: 'MINUTES')
         disableConcurrentBuilds()
     }
 
@@ -39,9 +39,9 @@ pipeline{
                         CD PIPELINE INFO
                         ================
 
-                        Build   : ${env.BUILD_NUMBER}
+                        Build   : #${env.BUILD_NUMBER}
                         Branch  : ${env.BRANCH_NAME}
-                        Commit SHA: ${COMMIT_TAG}
+                        Commit SHA: ${IMAGE_TAG}
                         Deploy To: ${DEPLOY_SERVER}
                         Triggered By: ${env.BUILD_USER ?: 'GITHUB PUSH'}
                     """
@@ -60,7 +60,7 @@ pipeline{
                         )
                     ]){
                         sh"""
-                            DOCKER_IMAGE = "\${DOCKER_USERNAME}:${APP_NAME}" 
+                            DOCKER_IMAGE ="\${DOCKER_USERNAME}:${APP_NAME}" 
 
                             echo "Building: "\${DOCKER_IMAGE}:${IMAGE_TAG}"
                             docker build --platform linux/amd64 \\
@@ -88,15 +88,15 @@ pipeline{
                         )
                     ]) {
                         sh"""
-                            DOCKER_IMAGE="\${DOCKER_USERNAME}:${APP_NAME}"
+                            DOCKER_IMAGE="\${DOCKER_USERNAME}/${APP_NAME}"
 
-                            CONTAINER_UID= \$(docker run --rm --entrypoint id \${DOCKER_IMAGE}) -u
+                            CONTAINER_UID=\$(docker run --rm --entrypoint id \${DOCKER_IMAGE}:${IMAGE_TAG} -u)
 
                             if [ "\${CONTAINER_UID}" = "0"]; then
                                 echo "FAILED ... The user is root user."
                                 exit 1
                             else
-                                echo "Passed!.. The user is non-root user and their UID is \${CONTAINER_UID}"
+                                echo "Passed!.. The user is non-root user and their UID is (\${CONTAINER_UID})"
                             fi
 
                         """
@@ -117,7 +117,7 @@ pipeline{
                         )
                     ]) {
                         sh """
-                            DOCKER_IMAGE = "\${DOCKER_USERNAME}:${APP_NAME}"
+                            DOCKER_IMAGE ="\${DOCKER_USERNAME}/${APP_NAME}"
 
                             echo "Logging to Dockerhub.."
                             echo \${DOCKER_PASSWORD} | docker login -u \${DOCKER_USERNAME} --password-stdin
@@ -147,27 +147,29 @@ pipeline{
                     ]) {
                         sshagent(['deploy-jenkins-ssh-server']){
                             sh"""
-                                DOCKER_IMAGE = "\${DOCKER_USERNAME}:${APP_NAME}"
-                                
-                                ssh -o StrictHostKeyChecking=no \\
-                                    -p ${DEPLOY_PORT}  \\
-                                    ${DEPLOY_USER}@${DEPLOY_SERVER} >>SSHEND
+                                DOCKER_IMAGE="\${DOCKER_USERNAME}/${APP_NAME}"
                                 
                                 echo"Deploying to production"
                                 echo "Server: ${DEPLOY_SERVER}"
                                 echo "Image: \${DOCKER_IMAGE}:${IMAGE_TAG}"
 
-                                // LOGIN to Dockerhub
+                                ssh -o StrictHostKeyChecking=no \\
+                                    -p ${DEPLOY_PORT}  \\
+                                    ${DEPLOY_USER}@${DEPLOY_SERVER} >>SSHEND
+                                
+                                
+
+                                #LOGIN to Dockerhub
                                 echo \${DOCKER_PASSWORD} | docker login -u \${DOCKER_USERNAME} --password-stdin
 
-                                // PULL new image
+                                # PULL new image
                                 docker pull \${DOCKER_IMAGE}:${IMAGE_TAG}
 
-                                // STOP and rm old container
+                                # STOP and rm old container
                                 docker stop ${APP_NAME} 2>/dev/null || true
                                 docker rm ${APP_NAME} 2>/dev/null || true
 
-                                // START new container with .env file
+                                # START new container with .env file
                                 docker run -d \\
                                     --name ${APP_NAME} \\
                                     --restart unless-stopped \\
@@ -176,17 +178,17 @@ pipeline{
                                     -p ${APP_PORT} \\
                                     \${DOCKER_IMAGE}:${IMAGE_TAG}
 
-                                // VERIFY container if its running or not
+                                # VERIFY container if its running or not
                                 sleep 5
                                 docker ps | grep ${APP_NAME}
 
-                                // LOGS monitor
+                                # LOGS monitor
                                 docker logs --tail 20 ${APP_NAME}
 
-                                // CLEANUP old images
-                                docker images| grep \${DOCKER_IMAGE} |  tail -n +6 | awk '{print \\\$3}' | xargs -r docker rmi || true
+                                # CLEANUP old images
+                                docker images | grep \${DOCKER_IMAGE} | tail -n +6 | awk '{print \\\$3}' | xargs -r docker rmi || true
 
-                                // LOGOUT
+                                # LOGOUT
                                 docker logout
 
                                 echo "Successfully Deployed!!"

@@ -25,7 +25,7 @@ pipeline{
         DEPLOY_SERVER = "185.199.53.175"
         DEPLOY_USER = "deploy"
         DEPLOY_PORT = "22"
-        APP_PORT = "8080"
+        APP_PORT = "3000"
 
         // .env file pathway inside the production server
         ENV_FILE = "/home/deploy/devops-java/.env"
@@ -60,7 +60,6 @@ pipeline{
                         )
                     ]){
                         sh"""
-                            // Build docker image using docker username from credentials
                             DOCKER_IMAGE = "\${DOCKER_USERNAME}:${APP_NAME}" 
 
                             echo "Building: "\${DOCKER_IMAGE}:${IMAGE_TAG}"
@@ -89,11 +88,11 @@ pipeline{
                         )
                     ]) {
                         sh"""
-                            DOCKER_IMAGE = "\${DOCKER_USERNAME}:${APP_NAME}"
+                            DOCKER_IMAGE="\${DOCKER_USERNAME}:${APP_NAME}"
 
-                            CONTAINER_UID = "\$(docker run --rm --entrypoint id \${DOCKER_IMAGE}) -u"
+                            CONTAINER_UID= \$(docker run --rm --entrypoint id \${DOCKER_IMAGE}) -u
 
-                            if ["\${CONTAINER_UID}" = "0"]; then
+                            if [ "\${CONTAINER_UID}" = "0"]; then
                                 echo "FAILED ... The user is root user."
                                 exit 1
                             else

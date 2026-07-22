@@ -1,0 +1,39 @@
+# Exclude local dependencies (Docker should install its own)
+node_modules/
+jspm_packages/
+.npm/
+.yarn/
+
+# Exclude local build and test outputs
+dist/
+build/
+out/
+coverage/
+.next/
+
+# Exclude local environment files and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Exclude Git files
+.git/
+.gitignore
+
+# Exclude IDE/Editor configurations
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+
+# Exclude OS metadata
+.DS_Store
+Thumbs.db
+
+# Exclude Docker files themselves
+Dockerfile
+.dockerignore
+docker-compose*.yml

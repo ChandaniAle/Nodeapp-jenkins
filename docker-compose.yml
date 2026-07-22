@@ -1,0 +1,43 @@
+services:
+  data-service:
+    image: postgres:16-alpine
+    container_name: postgresql
+    environment:
+      - POSTGRES_NAME=${DB_NAME:-nodeapp-jenkins}
+      - POSTGRES_USER=${DB_USER:-admin}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-admin}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - private-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-admin} -d ${DB_NAME:-nodeapp-jenkins} "]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 3s
+
+  api-service:
+    build: .
+    container_name: backend
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_HOST=data-service
+      - DB_PORT=5432
+      - POSTGRES_NAME=${DB_NAME:-nodeapp-jenkins}
+      - POSTGRES_USER=${DB_USER:-admin}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-admin}
+    networks:
+      - private-net
+    depends_on:
+      data-service:
+        condition: service_healthy
+    
+networks:
+  private-net:
+    name: private-net
+    driver: bridge
+
+volumes:
+  postgres-data:

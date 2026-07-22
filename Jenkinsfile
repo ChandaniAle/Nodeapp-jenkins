@@ -60,7 +60,6 @@ pipeline{
         stage("Docker Build"){
             steps{
                 sh"""
-                    // Building Docker image
                     echo "Building: ${CI_IMAGE}"
                     docker build --tag ${CI_IMAGE} --file Dockerfile .
                     echo "build Successfully"
@@ -73,20 +72,20 @@ pipeline{
         stage("Verify Image"){
             steps{
                 sh"""
-                    // Verifying image
+                    
                     echo "Verifying image: ${CI_IMAGE}"
 
-                        // checking the jar file in the image
+                        echo "checking the jar file in the image"
                         docker run --rm --entrypoint ls ${CI_IMAGE} -lh /app/app.jar
                         echo "Jar found"
 
-                        // checking the node inside the image
-                        docker run --rm --entrypoint node ${CI_IMAGE} --version
+                        echo "checking the node inside the image"
+                        docker run --rm --entrypoint node ${CI_IMAGE} -version
                         echo "Node OK"
 
-                        // Checking the ports inside the image
-                        docker inspect ${CI_IMAGE} --format="Ports:{{json .Config.ExposedPorts}}"
-                        echo "Node OK"
+                        echo "checking the ports inside the image"
+                        docker inspect ${CI_IMAGE} --format="Ports: {{json .Config.ExposedPorts}}"
+                        echo "Port OK"
 
                         echo "Verified the image successfully"
                 """
@@ -96,14 +95,14 @@ pipeline{
         stage("Security Scan"){
             steps{
                 sh"""
-                    CONTAINER_UID="\$(docker run --rm --entrypoint id ${CI_IMAGE} -u)"
-                    echo "Container_uid = \${CONTAINER_UID}"
+                    CONTAINER_UID=\$(docker run --rm --entrypoint id ${CI_IMAGE} -u)
+                    echo "Container_uid: \${CONTAINER_UID}"
 
-                    if ["\$CONTAINER_UID" = "0"];then
+                    if [ "\$CONTAINER_UID" = "0"]; then
                         echo "Failed... The user is root. High Alert Risk!!!!!"
                         exit 1
                     else
-                        echo "PASSED.. The user is non-user. The UID is \${CONTAINER_UID}"
+                        echo "PASSED.. The user is non-user. The UID is (\${CONTAINER_UID})"
                     fi
                 """
             }
@@ -167,7 +166,7 @@ pipeline{
                 CI PIPELINE FAILED
                 ==================
 
-                Build: ${env.BUILD_NUMBER}
+                Build  : #${env.BUILD_NUMBER}
                 Branch : ${env.BRANCH_NAME}
                 PR     : ${env.CHANGE_ID ?: 'N/A'}                                                                                            
                 Logs   : ${env.BUILD_URL}
@@ -177,7 +176,7 @@ pipeline{
         }
 
         always{
-            sh"docker image prune -f || true"
+            sh 'docker image prune -f || true'
         }
     } 
 }

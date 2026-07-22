@@ -62,7 +62,7 @@ pipeline{
                         sh"""
                             DOCKER_IMAGE="${DOCKER_USERNAME}/${APP_NAME}" 
 
-                            echo "Building: "\${DOCKER_IMAGE}:${IMAGE_TAG}"
+                            echo "Building: \${DOCKER_IMAGE}:${IMAGE_TAG}"
                             docker build --platform linux/amd64 \\
                                 --tag \${DOCKER_IMAGE}:${IMAGE_TAG} \\
                                 --tag \${DOCKER_IMAGE}:latest \\
@@ -191,7 +191,7 @@ pipeline{
                                 # LOGOUT
                                 docker logout
 
-                                echo "Successfully Deployed!!"
+                                echo 'Successfully Deployed!!'
 
                                 SSHEND
                                 

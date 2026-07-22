@@ -25,7 +25,7 @@ pipeline{
         DEPLOY_SERVER = "185.199.53.175"
         DEPLOY_USER = "deploy"
         DEPLOY_PORT = "22"
-        APP_PORT = "3000"
+        APP_PORT = "3002"
 
         // .env file pathway inside the production server
         ENV_FILE = "/home/deploy/devops-java/.env"

@@ -14,7 +14,7 @@ pipeline{
     }
                                                                                                                                    
     environment {
-          APP_NAME = 'Nodeapp-jenkins'
+          APP_NAME = 'nodeapp-jenkins'
           CI_IMAGE = "${APP_NAME}:ci-${env.GIT_COMMIT.take(7)}"
     }
 

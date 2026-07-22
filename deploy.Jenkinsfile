@@ -18,7 +18,7 @@ pipeline{
     }
 
     environment{
-        APP_NAME = 'Nodeapp-Jenkins'
+        APP_NAME = 'nodeapp-Jenkins'
         IMAGE_TAG = "${env.GIT_COMMIT.take(7)}"
 
         // info about deployment server

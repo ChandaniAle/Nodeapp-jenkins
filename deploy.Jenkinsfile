@@ -154,7 +154,7 @@ pipeline{
                                 echo "Image: \${DOCKER_IMAGE}:${IMAGE_TAG}"
 
                                 ssh -o StrictHostKeyChecking=no \\
-                                    -p ${DEPLOY_PORT}:${DEPLOY_PORT} \\
+                                    -p ${DEPLOY_PORT} \\
                                     ${DEPLOY_USER}@${DEPLOY_SERVER} >>SSHEND
                                 
                                 

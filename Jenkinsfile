@@ -41,8 +41,8 @@ pipeline{
             steps{
                 sh"""
                     echo "Verifying environment"
-                    echo "Hostname : ${hostname}"
-                    echo "User : ${whoami}"
+                    echo "Hostname : \${hostname}"
+                    echo "User : \${whoami}"
                     docker --version
                 """
             }

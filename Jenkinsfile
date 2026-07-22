@@ -29,7 +29,7 @@ pipeline{
                         Build : #${env.BUILD_NUMBER}
                         Branch : ${env.BRANCH_NAME}
                         PR : ${env.CHANGE_ID ?: 'NOT A PR'}
-                        Tilte : ${env.CHANGE_TITLE ?: 'N/A}
+                        Tilte : ${env.CHANGE_TITLE ?: 'N/A'}
                         --------------------------------------
 
                     """

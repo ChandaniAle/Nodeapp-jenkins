@@ -84,7 +84,7 @@ pipeline{
                         echo "index.js found"
 
                         echo "checking the node inside the image"
-                        docker run --rm --entrypoint node ${CI_IMAGE} -version
+                        docker run --rm --entrypoint node ${CI_IMAGE} --version
                         echo "Node OK"
 
                         echo "checking the ports inside the image"

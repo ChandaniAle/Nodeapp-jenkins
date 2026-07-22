@@ -174,8 +174,8 @@ pipeline{
                                     --name ${APP_NAME} \\
                                     --restart unless-stopped \\
                                     --network teaching-platform_default \\
-                                    --env-file ${ENV_FILE} \\
-                                    -p ${APP_PORT}:${APP_PORT} \\
+                                
+                                    -p 3002:3000 \\
                                     \${DOCKER_IMAGE}:${IMAGE_TAG}
 
                                 # VERIFY container if its running or not

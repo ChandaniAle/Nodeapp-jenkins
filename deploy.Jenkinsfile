@@ -117,7 +117,7 @@ pipeline{
                         )
                     ]) {
                         sh """
-                            DOCKER_IMAGE ="${DOCKER_USERNAME}/${APP_NAME}"
+                            DOCKER_IMAGE="\${DOCKER_USERNAME}/${APP_NAME}"
 
                             echo "Logging to Dockerhub.."
                             echo \${DOCKER_PASSWORD} | docker login -u \${DOCKER_USERNAME} --password-stdin
@@ -147,7 +147,7 @@ pipeline{
                     ]) {
                         sshagent(['deploy-jenkins-ssh-server']){
                             sh"""
-                                DOCKER_IMAGE="${DOCKER_USERNAME}/${APP_NAME}"
+                                DOCKER_IMAGE="\${DOCKER_USERNAME}/${APP_NAME}"
                                 
                                 echo "Deploying to production"
                                 echo "Server: ${DEPLOY_SERVER}"

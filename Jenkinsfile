@@ -75,9 +75,13 @@ pipeline{
                     
                     echo "Verifying image: ${CI_IMAGE}"
 
-                        echo "checking the jar file in the image"
-                        docker run --rm --entrypoint ls ${CI_IMAGE} -lh /app/app.jar
-                        echo "Jar found"
+                        echo "checking the package.json file in the image"
+                        docker run --rm --entrypoint ls ${CI_IMAGE} -lh /app/package.json
+                        echo "package.json found"
+
+                        echo "Checking main application file inside the image"
+                        docker run --rm --entrypoint ls ${CI_IMAGE} -lh index.js
+                        echo "index.js found"
 
                         echo "checking the node inside the image"
                         docker run --rm --entrypoint node ${CI_IMAGE} -version

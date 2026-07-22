@@ -173,9 +173,9 @@ pipeline{
                                 docker run -d \\
                                     --name ${APP_NAME} \\
                                     --restart unless-stopped \\
-                                    --network teaching-network_default \\
+                                    --network teaching-platform_default \\
                                     --env-file ${ENV_FILE} \\
-                                    -p ${APP_PORT} \\
+                                    -p ${APP_PORT}:${APP_PORT} \\
                                     \${DOCKER_IMAGE}:${IMAGE_TAG}
 
                                 # VERIFY container if its running or not

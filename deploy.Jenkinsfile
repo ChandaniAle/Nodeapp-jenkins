@@ -28,7 +28,7 @@ pipeline{
         APP_PORT = "3002"
 
         // .env file pathway inside the production server
-        ENV_FILE = "/home/deploy/devops-java/.env"
+        ENV_FILE = "/home/deploy/nodeapp-jenkins/.env"
     }
 
     stages{
@@ -174,7 +174,7 @@ pipeline{
                                     --name ${APP_NAME} \\
                                     --restart unless-stopped \\
                                     --network teaching-platform_default \\
-                                
+                                    --env-file ${ENV_FILE} \\
                                     -p 3002:3000 \\
                                     \${DOCKER_IMAGE}:${IMAGE_TAG}
 
